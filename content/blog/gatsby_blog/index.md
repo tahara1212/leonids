@@ -55,24 +55,51 @@ module.exports = {
 既存のサンプルを参考に適当に記事を書いてみる。  
 md形式なので改行は半角空白2つで行う。
 
-### WEBサーバ側の手順
+### フォントを変更
+/src/utils/Typography.jsにフォント系の情報がある。  
+デフォルトがWordpress2016となっていて日本語に対応していないので、Noto Sans JPとかに変更。
+```Typography.js
+import theme from "typography-theme-github"
 
-#### apacheの設定を変更する。
-```Linux
-vi /etc/httpd/conf/httpd.conf
+theme.overrideThemeStyles = () => {
+  return {
+    a: {
+      color: "var(--textLink)",
+    },
+    // gatsby-remark-autolink-headers - don't underline when hidden
+    "a.anchor": {
+      boxShadow: "none",
+    },
+    // gatsby-remark-autolink-headers - use theme colours for the link icon
+    'a.anchor svg[aria-hidden="true"]': {
+      stroke: "var(--textLink)",
+    },
+    hr: {
+      background: "var(--hr)",
+    },
+  }
+}
 
-<VirtualHost *:80>
-    ServerAdmin webmaster@dummy-host.example.com
-    DocumentRoot /var/www/public
-    ServerName www.example.com
-    RequestReadTimeout header=20 body=30
+theme.googleFonts = [
+  {
+    name: "Noto+Sans+JP",
+    styles: ["400"],
+  }
+]
 
-    RewriteEngine On
-    RewriteCond %{HTTP:X-Forwarded-Port} !^443$
-    RewriteCond %{HTTP:X-Forwarded-Proto} =http
-    RewriteRule .* https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]
-</VirtualHost>
+const typography = new Typography(theme)
+
+// Hot reload typography in development.
+if (process.env.NODE_ENV !== `production`) {
+  typography.injectStyles()
+}
+
+export default typography
+export const rhythm = typography.rhythm
+export const scale = typography.scale
 ```
-RewriteCond %{HTTP:X-Forwarded-Proto} =httpによって、LBサーバで付与したヘッダを確認する。  
-httpが指定されている場合のみhttpsにリダイレクト。  
-上記の設定によってリダイレクトループを回避する。  
+
+#### Netlifyにデプロイしてみる
+テンプレートによっては、インストールしているモジュールの依存関係でデプロイ時にエラーになる。　　
+凝ったデザインのものを使うより、シンプルなデザインのテンプレートを自分好みにカスタマイズした方が総合的には楽そう。  
+今回のleonidsは問題なくデプロイできた。
