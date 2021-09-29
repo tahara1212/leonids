@@ -17,13 +17,13 @@ image:
 
 ### LBサーバ側の手順
 
-HAProxy をインストール
+#### HAProxy をインストール
 ```Linux
 yum -y install haproxy
 ```
 
   
-基本的な構成はデフォルトのまま。  
+#### 基本的な構成はデフォルトのまま。  
 設定値の詳細は[こちら](https://knowledge.sakura.ad.jp/8084/) の記事を参考にした。
 ```Linux
 vi /etc/haproxy/haproxy.cfg  
@@ -47,7 +47,7 @@ defaults
 ```
 
   
-httpアクセスをhttpsにリダイレクトさせる
+#### httpアクセスをhttpsにリダイレクトさせる
 ```Linux
 frontend  http-in
     #mode tcp
@@ -69,16 +69,19 @@ backend static
 ```
 クライアントがHTTP通信の場合は80ポートのフロントエンドに処理が流れる。  
 reqadd X-Forwarded-Proto:\ httpを指定してヘッダにhttpを加え、webサーバへと通信を流す。  
+
 クライアントがHTTPS通信の場合は443ポートのフロントエンドに処理が流れ、ヘッダにはhttpsを指定する。  
-default_backendによって分散先のwebサーバを指定する。  
+default_backendによって分散先のwebサーバを指定する。 
+
 SSLオフロード形式なので、LB以降のwebサーバへは80ポートで渡す。  
-これにより、LBサーバ（HAProxy）にもSSL証明書ファイルを読ませる必要がある。  
+これにより、LBサーバ（HAProxy）にもSSL証明書ファイルを読ませる必要がある。
+
 オプションにcheckを指定する事で、バックエンドに指定するサーバのいずれかがダウンしている場合、そのサーバへはアクセスしない冗長化の処理を行う。  
 今回の設定ではHAProxyのログは出力していない。  
 
 ### WEBサーバ側の手順
 
-apacheの設定を変更する。
+#### apacheの設定を変更する。
 ```Linux
 vi /etc/httpd/conf/httpd.conf
 
