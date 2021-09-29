@@ -1,6 +1,6 @@
 ---
 title: Gatsby.jsを使って10分でブログを構築する
-date: "2020-09-20T09:26:03.284Z"
+date: "2021-08-28T09:26:03.284Z"
 description: "Reactの静的サイトジェネレータ。ポートフォリオやブログ等のテンプレートが用意されており、誰でも簡単にサイトを構築できる。"
 categories: [hello world]
 comments: true
@@ -55,7 +55,7 @@ module.exports = {
 既存のサンプルを参考に適当に記事を書いてみる。  
 md形式なので改行は半角空白2つで行う。
 
-### フォントを変更
+#### フォントを変更
 /src/utils/Typography.jsにフォント系の情報がある。  
 デフォルトがWordpress2016となっていて日本語に対応していないので、Noto Sans JPとかに変更。
 ```Typography.js
