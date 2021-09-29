@@ -12,8 +12,8 @@ image:
 
 ## HAProxy
 
-- 多機能プロキシサーバ。ロードバランサやリバースプロキシとして利用できる。
-- トラフィックのコントロールや、リクエストヘッダを書き換えて別サーバに渡す事ができる。
+多機能プロキシサーバ。ロードバランサやリバースプロキシとして利用できる。  
+トラフィックのコントロールや、リクエストヘッダを書き換えて別サーバに渡す事ができる。
 
 ### LBサーバ側の手順
 
@@ -22,12 +22,11 @@ HAProxy をインストール
 yum -y install haproxy
 ```
 
-
-- 基本的な構成はデフォルトのまま。
-- 設定値の詳細は[こちら](https://knowledge.sakura.ad.jp/8084/) の記事を参考にした。
+  
+基本的な構成はデフォルトのまま。  
+設定値の詳細は[こちら](https://knowledge.sakura.ad.jp/8084/) の記事を参考にした。
 ```Linux
-vi /etc/haproxy/haproxy.cfg
-
+vi /etc/haproxy/haproxy.cfg  
 defaults
     mode                    http
     log                     global
@@ -47,7 +46,7 @@ defaults
     maxconn                 3000
 ```
 
-
+  
 httpアクセスをhttpsにリダイレクトさせる
 ```Linux
 frontend  http-in
@@ -68,14 +67,14 @@ backend static
     server      webA 111.222.333.444:80 check
     server      webB 111.223.334.445:80 check
 ```
-- クライアントがHTTP通信の場合は80ポートのフロントエンドに処理が流れる。
-- reqadd X-Forwarded-Proto:\ httpを指定してヘッダにhttpを加え、webサーバへと通信を流す。
-- クライアントがHTTPS通信の場合は443ポートのフロントエンドに処理が流れ、ヘッダにはhttpsを指定する。
-- default_backendによって分散先のwebサーバを指定する。
-- SSLオフロード形式なので、LB以降のwebサーバへは80ポートで渡す。
-- これにより、LBサーバ（HAProxy）にもSSL証明書ファイルを読ませる必要がある。
-- オプションにcheckを指定する事で、バックエンドに指定するサーバのいずれかがダウンしている場合、そのサーバへはアクセスしない冗長化の処理を行う。
-- 今回の設定ではHAProxyのログは出力していない。
+クライアントがHTTP通信の場合は80ポートのフロントエンドに処理が流れる。  
+reqadd X-Forwarded-Proto:\ httpを指定してヘッダにhttpを加え、webサーバへと通信を流す。  
+クライアントがHTTPS通信の場合は443ポートのフロントエンドに処理が流れ、ヘッダにはhttpsを指定する。  
+default_backendによって分散先のwebサーバを指定する。  
+SSLオフロード形式なので、LB以降のwebサーバへは80ポートで渡す。  
+これにより、LBサーバ（HAProxy）にもSSL証明書ファイルを読ませる必要がある。  
+オプションにcheckを指定する事で、バックエンドに指定するサーバのいずれかがダウンしている場合、そのサーバへはアクセスしない冗長化の処理を行う。  
+今回の設定ではHAProxyのログは出力していない。  
 
 ### WEBサーバ側の手順
 
@@ -95,6 +94,6 @@ vi /etc/httpd/conf/httpd.conf
     RewriteRule .* https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]
 </VirtualHost>
 ```
-- RewriteCond %{HTTP:X-Forwarded-Proto} =httpによって、LBサーバで付与したヘッダを確認する。
-- httpが指定されている場合のみhttpsにリダイレクト。
-- 上記の設定によってリダイレクトループを回避する。
+RewriteCond %{HTTP:X-Forwarded-Proto} =httpによって、LBサーバで付与したヘッダを確認する。  
+httpが指定されている場合のみhttpsにリダイレクト。  
+上記の設定によってリダイレクトループを回避する。  
